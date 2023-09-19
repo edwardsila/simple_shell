@@ -14,6 +14,20 @@
 extern char **environ;
 
 /**
+ * struct liststr - singly linked list
+ * @num: number
+ * @str: string
+ * @next: points to the next node
+ */
+
+typedef struct liststr
+{
+	int num;
+	char *str;
+	struct liststr *next;
+} list_t;
+
+/**
  * struct shell_info - contains pseudo-arguments to pass into a function,
  * allowing a uniform prototype for a function pointer struct
  * @arg: a string generated from getline containing arguments
@@ -115,5 +129,49 @@ int _eputchar(char c);
 int _putFileDp(char c, int filedescriptor);
 int _putsFileDp(char *str, int filedescriptor);
 
+/* getline */
+ssize_t bufferInput(shell_info_t *info, char **buf, size_t *len);
+ssize_t  getInputLine(shell_info_t *info);
+ssize_t readBuffer(shell_info_t *info, char *buf, size_t *i);
+int get_line(shell_info_t *info, char **ptr, size_t *length);
+void handleSigint(__attribute__((unused))int sigNum);
+
+/* getenv */
+char **getEnviron(shell_info_t *shellInfo);
+int unsetEnv(shell_info_t *shellInfo, char *var);
+int setEnv(shell_info_t *shellInfo, char *var, char *value);
+
+/* getinfo */
+void clearShellInfo(shell_info_t *shellInfo);
+void setShellInfo(shell_info_t *shellInfo, char **av);
+void freeShellInfo(shell_info_t *shellInfo, int all);
+
+/* history */
+char *get_hist_file(shell_info_t *shellInfo);
+int write_hist_file(shell_info_t *shellInfo);
+int read_hist_file(shell_info_t *shellInfo);
+int build_hist_list(shell_info_t *shellInfo, char *buf, int linecount);
+int renumber_history(shell_info_t *shellInfo);
+
+/* list */
+list_t *add_history_node(shell_info_t *shellInfo, const char *str, int num);
+list_t *add_history_node_end(shell_info_t *shellInfo,
+		const char *str, int num);
+size_t print_history_str(shell_info_t *shellInfo);
+int delete_hist_node_at_index(shell_info_t *shellInfo, unsigned int index);
+void free_hist_list(shell_info_t *shellInfo);
+
+/* parser */
+int is_executable(shell_info_t *shellInfo, char *path);
+char *duplicate_chars(char *path_str, int start, int stop);
+char *find_exe_path(shell_info_t *shellInfo, char *path_str, char *command);
+
+/* realloc */
+char *_memset(char *s, char c, unsigned int n);
+void free_string_array(char **str_arr);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+
+/* memory */
+int freeAndNull(void **ptr);
 
 #endif
