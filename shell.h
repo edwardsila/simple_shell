@@ -11,6 +11,25 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#define BUF_FLUSH -1
+
+/* command chaining */
+#define CMD_NORM 0
+#define CMD_OR 1
+#define CMD_AND	2
+#define CMD_CHAIN 3
+
+/* convert_number */
+#define CONVERT_LOWERCASE 1
+#define CONVERT_UNSIGNED 2
+
+/*   getline() */
+#define USE_GETLINE 0
+#define USE_STRTOK 0
+
+#define HIST_FILE ".simple_shell_history"
+#define HIST_MAX 4096
+
 extern char **environ;
 
 /**
@@ -153,13 +172,8 @@ int read_hist_file(shell_info_t *shellInfo);
 int build_hist_list(shell_info_t *shellInfo, char *buf, int linecount);
 int renumber_history(shell_info_t *shellInfo);
 
-/* list */
-list_t *add_history_node(shell_info_t *shellInfo, const char *str, int num);
-list_t *add_history_node_end(shell_info_t *shellInfo,
-		const char *str, int num);
-size_t print_history_str(shell_info_t *shellInfo);
-int delete_hist_node_at_index(shell_info_t *shellInfo, unsigned int index);
-void free_hist_list(shell_info_t *shellInfo);
+/* lists */
+list_t *add_history_node(list_t **head, const char *str, int num);
 
 /* parser */
 int is_executable(shell_info_t *shellInfo, char *path);
@@ -197,9 +211,24 @@ char **strtow(char *input_str, char *delim);
 
 /* vars */
 int isChain(shell_info_t *shellInfo, char *buf, size_t *p);
-void checkChain(shell_info_t *shellInfo, char *buf, size_t *p, size_t i, size_t len);
+void checkChain(shell_info_t *shellInfo, char *buf, size_t *p,
+	size_t i, size_t len);
 int replaceAlias(shell_info_t *shellInfo);
 int replace_string(char **old, char *new);
 int replaceVars(shell_info_t *shellInfo);
+
+/* list_1 */
+size_t list_length(const list_t *h);
+char **list_to_string_arr(list_t *head);
+size_t print_list(const list_t *h);
+list_t *find_node_with_pfx(list_t *node, char *pfx, char c);
+ssize_t get_node_index(list_t *head, list_t *node);
+
+/* errors1 */
+int _erratoi(char *s);
+void print_error(shell_info_t *shellInfo, char *errorStr);
+int print_d(int, int);
+char *convert_number_to_str(long int, int, int);
+void rm_comments(char *);
 
 #endif

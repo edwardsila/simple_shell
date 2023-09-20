@@ -31,7 +31,7 @@ int _eputchar(char c)
 	static int i;
 	static char buffer[WR_BUF_SZ];
 
-	if (C == -1 || i >= WR_BUF_SZ)
+	if (c == -1 || i >= WR_BUF_SZ)
 	{
 		write(2, buffer, i);
 		i = 0;

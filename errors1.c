@@ -43,7 +43,7 @@ void print_error(shell_info_t *shellInfo, char *errorStr)
 	_eputs(":");
 	_eputs(shellInfo->argv[0]);
 	_eputs(":");
-	_eputs(estr);
+	_eputs(errorStr);
 }
 
 /**
@@ -77,9 +77,63 @@ int print_d(int input, int fd)
 			__putchar('0' + current / i);
 			count++;
 		}
-		current % = i;
+		current %= i;
 	}
 	__putchar('0' + current);
 	count++;
 	return (count);
+}
+
+/**
+ * convert_number_to_str - Converts a number to a string representation.
+ * @num: Number to convert.
+ * @base: Base for conversion.
+ * @flag: Conversion flags.
+ * Return: String representation of the number.
+ */
+
+char *convert_number_to_str(long int num, int base, int flag)
+{
+	static char *charset;
+	static char buffer[50];
+	char sign = 0;
+	char *ptr;
+	unsigned long n = num;
+
+	if (!(flag & CONVERT_UNSIGNED) && num < 0)
+	{
+		n = -num;
+		sign = '-';
+	}
+	charset = flag & CONVERT_LOWERCASE ? "0123456789abcdef" :
+		"0123456789ABCDEF";
+	ptr = &buffer[49];
+	*ptr = '\0';
+
+	do {
+		*--ptr = charset[n % base];
+		n /= base;
+	} while (n != 0);
+
+	if (sign)
+		*--ptr = sign;
+	return (ptr);
+}
+
+/**
+ * rm_comments - Replaces the first '#' character with '\0'.
+ * @str: Pointer to the string to modify.
+ * Return: Always 0.
+ */
+
+void rm_comments(char *str)
+{
+	int i;
+
+	for (i = 0; str[i] != '\0'; i++)
+		if (str[i] == '#' && (!i || str[i - 1] == ' '))
+		{
+			str[i] = '\0';
+			break;
+		}
 }

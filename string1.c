@@ -87,3 +87,26 @@ int _putchar(char c)
 		buffer[i++] = c;
 	return (1);
 }
+
+/**
+ * print_list - Print all elements of a linked list.
+ * @h: Pointer to the first node.
+ * Return: Size of the list.
+ */
+
+size_t print_list(const list_t *h)
+{
+	size_t size = 0;
+
+	while (h)
+	{
+		_puts(convert_number_to_string(h->num, 10, 0));
+		_putchar(':');
+		_putchar(' ');
+		_puts(h->str ? h->str : "(nil)");
+		_puts("\n");
+		h = h->next;
+		size++;
+	}
+	return (size);
+}

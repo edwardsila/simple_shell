@@ -8,7 +8,7 @@
 
 int displayShellHist(shell_info_t *shellInfo)
 {
-	print_history_str(shellInfo->history);
+	print_list(shellInfo->history);
 	return (0);
 }
 
@@ -30,8 +30,8 @@ int rmShellAlias(shell_info_t *shellInfo, char *aliasStr)
 	tempChar = *aliasAssignment;
 	*aliasAssignment = '\0';
 	result = delete_hist_node_at_index(&(shellInfo->alias),
-			add_history_node(shellInfo->alias,
-				nodeStartsWith(shellInfo->alias, aliasStr, -1)));
+			get_node_index(shellInfo->alias,
+				find_node_with_pfx(shellInfo->alias, aliasStr, -1)));
 	*aliasAssignment = tempChar;
 	return (result);
 }
