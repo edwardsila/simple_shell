@@ -13,19 +13,20 @@ int exitShell(shell_info_t *shellInfo)
 
 	if (shellInfo->argc > 1)
 	{
-		exitStatus = customAtoi(shellInfo->argv[1]);
+		exitStatus = _erratoi(shellInfo->argv[1]);
 		if (exitStatus == -1)
 		{
 			shellInfo->status = 2;
 			print_error(shellInfo, "Wrong number: ");
-			print_error(shellInfo, shellInfo->argv[1]);
-			print_new_line();
+			_eputs(shellInfo->argv[1]);
+			_eputchar('\n');
 			return (1);
 		}
-		shellInfo->errNum = exitStatus;
+		shellInfo->err_num = _erratoi(shellInfo->argv[1]);
+		return (-2);
 	}
 	else
-		shellInfo->errNum = -1;
+		shellInfo->err_num = -1;
 	return (-2);
 }
 
@@ -42,40 +43,40 @@ int changeDir(shell_info_t *shellInfo)
 
 	currentDir = getcwd(buffer, 1024);
 	if (!currentDir)
-		printErrorMessage(shellInfo, "TODO: Failure\n");
-	if (!shellInfo->argc[1])
+		_puts("TODO: Failure\n");
+	if (!shellInfo->argv[1])
 	{
-		newDir = _getenv(shellInfo, "HOME=");
+		newDir = getEnvVariable(shellInfo, "HOME=");
 		if (!newDir)
-			chdirResult = chdir((newDir = _getenv(shellInfo, "PWD=")) ? newDir : "/");
+			chdirResult = chdir((newDir = getEnvVariable(shellInfo, "PWD=")) ? newDir : "/");
 		else
 			chdirResult = chdir(newDir);
 	}
 	else if (_strcmp(shellInfo->argv[1], "-") == 0)
 	{
-		if (!_getenv(shellInfo, "OLDPWD="))
+		if (!getEnvVariable(shellInfo, "OLDPWD="))
 		{
 			_puts(currentDir);
 			_putchar('\n');
 			return (1);
 		}
-		_puts(_getenv(shellInfo, "OLDPWD="));
+		_puts(getEnvVariable(shellInfo, "OLDPWD="));
 		_putchar('\n');
-		chdirResult = chdir((newDir = _getenv(shellInfo, "OLDPWD=")) ? newDir : "/");
+		chdirResult = chdir((newDir = getEnvVariable(shellInfo, "OLDPWD=")) ? newDir : "/");
 	}
 	else
 		chdirResult = chdir(shellInfo->argv[1]);
 
 	if (chdirResult == -1)
 	{
-		printError(shellInfo, "cannot cd to: ");
+		print_error(shellInfo, "cannot cd to: ");
 		_eputs(shellInfo->argv[1]);
 		_eputchar('\n');
 	}
 	else
 	{
-		_setenv(shellInfo, "OLDPWD", _getenv(shellInfo, "PWD="));
-		_setenv(shellInfo, "PWD", getcwd(buffer, 1024));
+		setEnv(shellInfo, "OLDPWD", getEnvVariable(shellInfo, "PWD="));
+		setEnv(shellInfo, "PWD", getcwd(buffer, 1024));
 	}
 	return (0);
 }

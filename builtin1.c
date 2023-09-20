@@ -54,7 +54,7 @@ int setAlias(shell_info_t *shellInfo, char *aliasStr)
 		return (rmShellAlias(shellInfo, aliasStr));
 	rmShellAlias(shellInfo, aliasStr);
 
-	return (addNodeEnd(&(shellInfo->alias), aliasStr, 0) == NULL);
+	return (add_history_node_end(&(shellInfo->alias), aliasStr, 0) == NULL);
 }
 
 /**
@@ -108,7 +108,7 @@ int manageAlias(shell_info_t *shellInfo)
 		if (aliasAssignment)
 			setAlias(shellInfo, shellInfo->argv[i]);
 		else
-			printAlias(nodeStartWith(shellInfo->alias, shellInfo->argv[i], '='));
+			printAlias(find_node_with_pfx(shellInfo->alias, shellInfo->argv[i], '='));
 	}
 	return (0);
 }

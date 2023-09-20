@@ -9,8 +9,8 @@ char **getEnviron(shell_info_t *shellInfo)
 {
 	if (!shellInfo || shellInfo->env_changed)
 	{
-		shellInfo = listToStrings(shellInfo->env);
-		shellInfo->env_chnaged = 0;
+		shellInfo->environ = list_to_string_arr(shellInfo->env);
+		shellInfo->env_changed = 0;
 	}
 	return (shellInfo->environ);
 }
@@ -32,10 +32,10 @@ int unsetEnv(shell_info_t *shellInfo, char *var)
 		return (0);
 	while (node)
 	{
-		p = starts_with(node->str, var);
+		p = startWith(node->str, var);
 		if (p && *p == '=')
 		{
-			shellInfo->env_changed = delete_node_at_index
+			shellInfo->env_changed = delete_hist_node_at_index
 				(&(shellInfo->env), i);
 			node = shellInfo->env;
 			continue;
@@ -57,6 +57,7 @@ int unsetEnv(shell_info_t *shellInfo, char *var)
 
 int setEnv(shell_info_t *shellInfo, char *var, char *value)
 {
+	char equals[] = "=";
 	char *buf = NULL;
 	list_t *node;
 	char *p;
@@ -67,12 +68,12 @@ int setEnv(shell_info_t *shellInfo, char *var, char *value)
 	if (!buf)
 		return (1);
 	_strcpy(buf, var);
-	_strcat(buf, '=');
+	_strcat(buf, equals);
 	_strcat(buf, value);
 	node = shellInfo->env;
 	while (node)
 	{
-		p = starts_with(node->str, var);
+		p = startWith(node->str, var);
 		if (p && *p == '=')
 		{
 			free(node->str);
@@ -82,7 +83,7 @@ int setEnv(shell_info_t *shellInfo, char *var, char *value)
 		}
 		node = node->next;
 	}
-	add_node_end(&(shellInfo->env), buf, 0);
+	add_history_node_end(&(shellInfo->env), buf, 0);
 	free(buf);
 	shellInfo->env_changed = 1;
 	return (0);

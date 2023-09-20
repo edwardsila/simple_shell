@@ -173,7 +173,11 @@ int build_hist_list(shell_info_t *shellInfo, char *buf, int linecount);
 int renumber_history(shell_info_t *shellInfo);
 
 /* lists */
-list_t *add_history_node(list_t **head, const char *str, int num);
+list_t *add_history_node(shell_info_t *shellInfo, const char *str, int num);
+list_t *add_history_node_end(list_t **head, const char *str, int num);
+size_t print_history_str(const list_t *h);
+int delete_hist_node_at_index(list_t **head, unsigned int index);
+void free_hist_list(list_t **head_p);
 
 /* parser */
 int is_executable(shell_info_t *shellInfo, char *path);

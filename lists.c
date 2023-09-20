@@ -37,20 +37,20 @@ list_t *add_history_node(shell_info_t *shellInfo, const char *str, int num)
 
 /**
  * add_history_node_end - Adds a history node to the end of the list.
- * @shellInfo: Pointer to the shell_info_t structure.
+ * @head: Pointer to the shell_info_t structure.
  * @str: The string field of the node.
  * @num: Node index used by history.
  * Return: Pointer to the new node.
  */
 
-list_t *add_history_node_end(shell_info_t *shellInfo, const char *str, int num)
+list_t *add_history_node_end(list_t **head, const char *str, int num)
 {
 	list_t *newNode, *node;
 
-	if (!shellInfo)
+	if (!head)
 		return (NULL);
 
-	node = shellInfo->history;
+	node = *head;
 	newNode = malloc(sizeof(list_t));
 
 	if (!newNode)
@@ -74,26 +74,25 @@ list_t *add_history_node_end(shell_info_t *shellInfo, const char *str, int num)
 		node->next = newNode;
 	}
 	else
-		shellInfo->history = newNode;
+		*head = newNode;
 	return (newNode);
 }
 
 /**
  * print_history_str - Prints only the str element of a history list.
- * @shellInfo: Pointer to the shell_info_t structure.
+ * @h: Pointer to the shell_info_t structure.
  * Return: The number of nodes printed.
  */
 
-size_t print_history_str(shell_info_t *shellInfo)
+size_t print_history_str(const list_t *h)
 {
-	list_t *node = shellInfo->history;
 	size_t i = 0;
 
-	while (node)
+	while (h)
 	{
-		_puts(node->str ? node->str : "(nil)");
+		_puts(h->str ? h->str : "(nil)");
 		_puts("\n");
-		node = node->next;
+		h = h->next;
 		i++;
 	}
 	return (i);
@@ -102,27 +101,29 @@ size_t print_history_str(shell_info_t *shellInfo)
 
 /**
  * delete_hist_node_at_index - Deletes a history node at a given index.
- * @shellInfo: Pointer to the shell_info_t structure.
+ * @head: Pointer to the shell_info_t structure.
  * @index: Index of the node to delete.
  * Return: 1 on success, 0 on failure.
  */
 
-int delete_hist_node_at_index(shell_info_t *shellInfo, unsigned int index)
+int delete_hist_node_at_index(list_t **head, unsigned int index)
 {
-	list_t *node = shellInfo->history;
+	list_t *node;
 	list_t *prevNode = NULL;
 	unsigned int i = 0;
 
-	if (!shellInfo || !shellInfo->history)
+	if (!head || !*head)
 		return (0);
 
 	if (!index)
 	{
-		shellInfo->history = shellInfo->history->next;
+		node = *head;
+		*head = (*head)->next;
 		free(node->str);
 		free(node);
 		return (1);
 	}
+	node = *head;
 
 	while (node)
 	{
@@ -142,18 +143,18 @@ int delete_hist_node_at_index(shell_info_t *shellInfo, unsigned int index)
 
 /**
  * free_hist_list - Frees all nodes of a history list.
- * @shellInfo: Pointer to the shell_info_t structure.
+ * @head_p: Pointer to the shell_info_t structure.
  * Return: void.
  */
 
-void free_hist_list(shell_info_t *shellInfo)
+void free_hist_list(list_t **head_p)
 {
 	list_t *node, *nextNode, *head;
 
-	if (!shellInfo || !shellInfo->history)
+	if (!head_p || !*head_p)
 		return;
 
-	head = shellInfo->history;
+	head = *head_p;
 	node = head;
 
 	while (node)
@@ -163,5 +164,5 @@ void free_hist_list(shell_info_t *shellInfo)
 		free(node);
 		node = nextNode;
 	}
-	shellInfo->history = NULL;
+	*head_p = NULL;
 }

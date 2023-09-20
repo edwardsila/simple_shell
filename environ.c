@@ -7,7 +7,7 @@
 
 int dispEnvironment(shell_info_t *shellInfo)
 {
-	printStrLs(shellInfo->env);
+	print_history_str(shellInfo->env);
 	return (0);
 }
 
@@ -25,7 +25,7 @@ char *getEnvVariable(shell_info_t *shellInfo, const char *name)
 
 	while (node)
 	{
-		p = startsWith(node->str, name);
+		p = startWith(node->str, name);
 		if (p && *p)
 			return (p);
 		node = node->next;
@@ -47,7 +47,7 @@ int setEnvVariable(shell_info_t *shellInfo)
 		_eputs("check number of arguments\n");
 		return (1);
 	}
-	if (_setEnvVariable(shellInfo, shellInfo->argv[1], shellInfo->argv[2]))
+	if (setEnv(shellInfo, shellInfo->argv[1], shellInfo->argv[2]))
 		return (0);
 	return (1);
 }
@@ -68,7 +68,7 @@ int unsetEnvVariable(shell_info_t *shellInfo)
 		return (1);
 	}
 	for (i = 1; i <= shellInfo->argc; i++)
-		_unsetEnvVariable(shellInfo, shellInfo->argv[i]);
+		unsetEnv(shellInfo, shellInfo->argv[i]);
 
 	return (0);
 }
@@ -85,7 +85,7 @@ int populateEnvList(shell_info_t *shellInfo)
 	size_t i;
 
 	for (i = 0; environ[i]; i++)
-		addNodeEnd(&node, environ[i], 0);
+		add_history_node_end(&node, environ[i], 0);
 	shellInfo->env = node;
 	return (0);
 }

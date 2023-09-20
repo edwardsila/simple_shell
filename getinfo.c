@@ -54,7 +54,7 @@ void setShellInfo(shell_info_t *shellInfo, char **av)
 
 void freeShellInfo(shell_info_t *shellInfo, int all)
 {
-	ffree(shellInfo->argv);
+	free_string_array(shellInfo->argv);
 	shellInfo->argv = NULL;
 	shellInfo->path = NULL;
 
@@ -63,14 +63,14 @@ void freeShellInfo(shell_info_t *shellInfo, int all)
 		if (!shellInfo->cmd_buf)
 			free(shellInfo->arg);
 		if (shellInfo->env)
-			freeList(&(shellInfo->env));
+			free_hist_list(&(shellInfo->env));
 		if (shellInfo->history)
-			freeList(&(shellInfo->history));
+			free_hist_list(&(shellInfo->history));
 		if (shellInfo->alias)
-			freeList(&(shellInfo->alias));
-		ffree(shellInfo->environ);
+			free_hist_list(&(shellInfo->alias));
+		free_string_array(shellInfo->environ);
 		shellInfo->environ = NULL;
-		bfree((void **)shellInfo->cmd_buf);
+		freeAndNull((void **)shellInfo->cmd_buf);
 		if (shellInfo->readfd > 2)
 			close(shellInfo->readfd);
 		_putchar(BUF_FLUSH);
