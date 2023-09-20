@@ -30,7 +30,7 @@ void free_string_array(char **str_arr)
 		return;
 
 	while (*str_arr)
-		freee(*str_arr++);
+		free(*str_arr++);
 
 	free(arr);
 }
@@ -65,5 +65,5 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 		c[old_size] = ((char *)ptr)[old_size];
 
 	free(ptr);
-	return (p);
+	return (c);
 }

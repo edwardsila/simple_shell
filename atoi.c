@@ -7,9 +7,9 @@
  * Return: 1 if the shell is in interactive mode, 0 otherwise.
  */
 
-int isShellInteractive(info_t *shellInfo)
+int isShellInteractive(shell_info_t *shellInfo)
 {
-	return (isTerminal(STDIN_FILENO) && shellInfo->readDescriptor <= 2);
+	return (isatty(STDIN_FILENO) && shellInfo->readfd <= 2);
 }
 
 /**
@@ -54,9 +54,9 @@ int strToInt(char *str)
 {
 	int i;
 
-	sign = 1;
-	flag = 0;
-	result = 0;
+	int sign = 1;
+	int flag = 0;
+	int result = 0;
 
 	for (i = 0; str[i] != '\0' && flag != 2; i++)
 	{

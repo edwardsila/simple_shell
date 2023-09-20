@@ -18,7 +18,7 @@ list_t *add_history_node(shell_info_t *shellInfo, const char *str, int num)
 	if (!newHead)
 		return (NULL);
 
-	_memset((void *)newHeaad, 0, sizeof(list_t));
+	_memset((void *)newHead, 0, sizeof(list_t));
 	newHead->num = num;
 
 	if (str)
@@ -161,7 +161,7 @@ void free_hist_list(shell_info_t *shellInfo)
 		nextNode = node->next;
 		free(node->str);
 		free(node);
-		node = nextnode;
+		node = nextNode;
 	}
 	shellInfo->history = NULL;
 }

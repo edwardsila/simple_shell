@@ -11,7 +11,7 @@ int is_executable(shell_info_t *shellInfo, char *path)
 {
 	struct stat st;
 
-	(void)info;
+	(void)shellInfo;
 
 	if (!path || stat(path, &st))
 		return (0);
@@ -84,7 +84,7 @@ char *find_exe_path(shell_info_t *shellInfo, char *path_str, char *command)
 
 			curr_pos = i;
 		}
-		i++
+		i++;
 	}
 	return (NULL);
 }

@@ -174,4 +174,32 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 /* memory */
 int freeAndNull(void **ptr);
 
+/* shell_loop */
+int hsh(shell_info_t *shellInfo, char **av);
+int find_builtin(shell_info_t *shellInfo);
+void findCmd(shell_info_t *shellInfo);
+void forkCmd(shell_info_t *shellInfo);
+
+/* string */
+char *_strcpy(char *dest, char *src);
+char *_strdup(const char *str);
+void _puts(char *str);
+int _putchar(char c);
+
+/* string_1 */
+int _strlen(char *s);
+int _strcmp(char *str1, char *str2);
+char *startWith(const char *stack, const char *c);
+char *_strcat(char *dest, char *src);
+
+/* tokenizer */
+char **strtow(char *input_str, char *delim);
+
+/* vars */
+int isChain(shell_info_t *shellInfo, char *buf, size_t *p);
+void checkChain(shell_info_t *shellInfo, char *buf, size_t *p, size_t i, size_t len);
+int replaceAlias(shell_info_t *shellInfo);
+int replace_string(char **old, char *new);
+int replaceVars(shell_info_t *shellInfo);
+
 #endif
