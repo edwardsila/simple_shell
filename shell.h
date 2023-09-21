@@ -230,7 +230,7 @@ int replaceVars(shell_info_t *shellInfo);
 size_t list_length(const list_t *h);
 char **list_to_string_arr(list_t *head);
 size_t print_list(const list_t *h);
-list_t *find_node_with_pfx(list_t *node, char *pfx, char c);
+list_t *find_node_with_pfx(list_t *, char *, char);
 ssize_t get_node_index(list_t *head, list_t *node);
 
 /* errors1 */

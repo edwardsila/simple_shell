@@ -128,7 +128,7 @@ int replaceVars(shell_info_t *shellInfo)
 					(convert_number_to_str(getpid(), 10, 0)));
 			continue;
 		}
-		node = find_node_with_pfx(shellInfo->env,
+		node = find_node_with_pfx(shellInfo->env,&
 				shellInfo->argv[i][1], '=');
 		if (node)
 		{
