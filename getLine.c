@@ -11,7 +11,7 @@
 ssize_t bufferInput(shell_info_t *info, char **buf, size_t *len)
 {
 	ssize_t bytesRead = 0;
-	ssize_t len_p = 0;
+	size_t len_p = 0;
 
 	if (!*len)
 	{

@@ -9,8 +9,10 @@
 
 int main(int ac, char **av)
 {
-	shell_info_t info = INFO_INIT;
 	int fd = 2;
+
+	shell_info_t shellInfo = INFO_INIT;
+	shellInfo.cmdBuffer = NULL;
 
 	asm ("mov %1, %0\n\t"
 			"add $3, %0"
@@ -35,10 +37,10 @@ int main(int ac, char **av)
 			}
 			return (EXIT_FAILURE);
 		}
-		info.readfd = fd;
+		shellInfo.readfd = fd;
 	}
-	populateEnvList(&info);
-	read_hist_file(&info);
-	hsh(&info, av);
+	populateEnvList(&shellInfo);
+	read_hist_file(&shellInfo);
+	hsh(&shellInfo, av);
 	return (EXIT_SUCCESS);
 }

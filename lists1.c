@@ -30,6 +30,7 @@ char **list_to_string_arr(list_t *head)
 	size_t size = list_length(head), i;
 	char **strings;
 	char *str;
+	size_t j;
 
 	if (!head || !size)
 		return (NULL);
@@ -41,7 +42,7 @@ char **list_to_string_arr(list_t *head)
 		str = malloc(_strlen(node->str) + 1);
 		if (!str)
 		{
-			for (size_t j = 0; j < i; j++)
+			for (j = 0; j < i; j++)
 				free(strings[j]);
 			free(strings);
 			return (NULL);

@@ -140,7 +140,6 @@ void forkCmd(shell_info_t *shellInfo)
 	child_pid = fork();
 	if (child_pid == -1)
 	{
-TODO:
 		perror("Error! ");
 		return;
 	}
