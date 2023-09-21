@@ -1,12 +1,11 @@
 #include "shell.h"
-#define WR_BUF_SZ 1024
 
 /**
- * _eputs - prints a string
- * @str: pointer to the string
+ *_eputs - prints an input string
+ * @str: the string to be printed
+ *
  * Return: Nothing
  */
-
 void _eputs(char *str)
 {
 	int i = 0;
@@ -21,65 +20,66 @@ void _eputs(char *str)
 }
 
 /**
- * _eputchar - inputs character c
- * @c: character to output
- * Return: 1 on succes, o otherwise
+ * _eputchar - writes the character c to stderr
+ * @c: The character to print
+ *
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
  */
-
 int _eputchar(char c)
 {
 	static int i;
-	static char buffer[WR_BUF_SZ];
+	static char buf[WRITE_BUF_SIZE];
 
-	if (c == -1 || i >= WR_BUF_SZ)
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
 	{
-		write(2, buffer, i);
+		write(2, buf, i);
 		i = 0;
 	}
-	if (c != -1)
-		buffer[i++] = c;
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
 	return (1);
 }
 
 /**
- * _putFileDp - writes c to filedescriptor
- * @c: character
- * @filedescriptor: filedescriptor.
- * Return: 1 on success && -1 otherwise
+ * _putfd - writes the character c to given fd
+ * @c: The character to print
+ * @fd: The filedescriptor to write to
+ *
+ * Return: On success 1.
+ * On error, -1 is returned, and errno is set appropriately.
  */
-
-int _putFileDp(char c, int filedescriptor)
+int _putfd(char c, int fd)
 {
 	static int i;
-	static char buffer[WR_BUF_SZ];
+	static char buf[WRITE_BUF_SIZE];
 
-	if (c == -1 || i >= WR_BUF_SZ)
+	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
 	{
-		write(filedescriptor, buffer, i);
+		write(fd, buf, i);
 		i = 0;
 	}
-	if (c != -1)
-		buffer[i++] = c;
+	if (c != BUF_FLUSH)
+		buf[i++] = c;
 	return (1);
 }
 
 /**
- * _putsFileDp - prints a string.
- * @str: string
- * @filedescriptor: fd
- * Return: i
+ *_putsfd - prints an input string
+ * @str: the string to be printed
+ * @fd: the filedescriptor to write to
+ *
+ * Return: the number of chars put
  */
-
-int _putsFileDp(char *str, int filedescriptor)
+int _putsfd(char *str, int fd)
 {
-	int i;
+	int i = 0;
 
-	i = 0;
 	if (!str)
 		return (0);
 	while (*str)
 	{
-		i += _putFileDp(*str++, filedescriptor);
+		i += _putfd(*str++, fd);
 	}
 	return (i);
 }

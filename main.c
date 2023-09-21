@@ -4,20 +4,18 @@
  * main - entry point
  * @ac: arg count
  * @av: arg vector
+ *
  * Return: 0 on success, 1 on error
  */
-
 int main(int ac, char **av)
 {
+	info_t info[] = { INFO_INIT };
 	int fd = 2;
 
-	shell_info_t shellInfo = INFO_INIT;
-	shellInfo.cmdBuffer = NULL;
-
 	asm ("mov %1, %0\n\t"
-			"add $3, %0"
-			: "=r" (fd)
-			: "r" (fd));
+		"add $3, %0"
+		: "=r" (fd)
+		: "r" (fd));
 
 	if (ac == 2)
 	{
@@ -37,10 +35,10 @@ int main(int ac, char **av)
 			}
 			return (EXIT_FAILURE);
 		}
-		shellInfo.readfd = fd;
+		info->readfd = fd;
 	}
-	populateEnvList(&shellInfo);
-	read_hist_file(&shellInfo);
-	hsh(&shellInfo, av);
+	populate_env_list(info);
+	read_history(info);
+	hsh(info, av);
 	return (EXIT_SUCCESS);
 }

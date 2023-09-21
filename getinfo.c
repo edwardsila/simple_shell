@@ -1,78 +1,74 @@
 #include "shell.h"
 
 /**
- * clearShellInfo - Initializes shell_info_t structure.
- * @shellInfo: Pointer to the shell_info_t structure to be cleared.
+ * clear_info - initializes info_t struct
+ * @info: struct address
  */
-
-void clearShellInfo(shell_info_t *shellInfo)
+void clear_info(info_t *info)
 {
-	shellInfo->arg = NULL;
-	shellInfo->argv = NULL;
-	shellInfo->path = NULL;
-	shellInfo->argc = 0;
+	info->arg = NULL;
+	info->argv = NULL;
+	info->path = NULL;
+	info->argc = 0;
 }
 
 /**
- * setShellInfo - Initializes shell_info_t structure.
- * @shellInfo: Pointer to the shell_info_t structure to be initialized.
- * @av: Argument vector typically passed to the shell.
+ * set_info - initializes info_t struct
+ * @info: struct address
+ * @av: argument vector
  */
-
-void setShellInfo(shell_info_t *shellInfo, char **av)
+void set_info(info_t *info, char **av)
 {
-	int i;
+	int i = 0;
 
-	i = 0;
-	shellInfo->fname = av[0];
-	if (shellInfo->arg)
+	info->fname = av[0];
+	if (info->arg)
 	{
-		shellInfo->argv = strtow(shellInfo->arg, " \t");
-		if (!shellInfo->argv)
+		info->argv = strtow(info->arg, " \t");
+		if (!info->argv)
 		{
-			shellInfo->argv = malloc(sizeof(char *) * 2);
-			if (shellInfo->argv)
+
+			info->argv = malloc(sizeof(char *) * 2);
+			if (info->argv)
 			{
-				shellInfo->argv[0] = _strdup(shellInfo->arg);
-				shellInfo->argv[1] = NULL;
+				info->argv[0] = _strdup(info->arg);
+				info->argv[1] = NULL;
 			}
 		}
-		for (i = 0; shellInfo->argv && shellInfo->argv[i]; i++)
+		for (i = 0; info->argv && info->argv[i]; i++)
 			;
-		shellInfo->argc = i;
+		info->argc = i;
 
-		replaceAlias(shellInfo);
-		replaceVars(shellInfo);
+		replace_alias(info);
+		replace_vars(info);
 	}
 }
 
 /**
- * freeShellInfo - Frees shell_info_t structure fields.
- * @shellInfo: Pointer to the shell_info_t structure.
- * @all: True if freeing all fields.
+ * free_info - frees info_t struct fields
+ * @info: struct address
+ * @all: true if freeing all fields
  */
-
-void freeShellInfo(shell_info_t *shellInfo, int all)
+void free_info(info_t *info, int all)
 {
-	free_string_array(shellInfo->argv);
-	shellInfo->argv = NULL;
-	shellInfo->path = NULL;
-
+	ffree(info->argv);
+	info->argv = NULL;
+	info->path = NULL;
 	if (all)
 	{
-		if (!shellInfo->cmd_buf)
-			free(shellInfo->arg);
-		if (shellInfo->env)
-			free_hist_list(&(shellInfo->env));
-		if (shellInfo->history)
-			free_hist_list(&(shellInfo->history));
-		if (shellInfo->alias)
-			free_hist_list(&(shellInfo->alias));
-		free_string_array(shellInfo->environ);
-		shellInfo->environ = NULL;
-		freeAndNull((void **)shellInfo->cmd_buf);
-		if (shellInfo->readfd > 2)
-			close(shellInfo->readfd);
+		if (!info->cmd_buf)
+			free(info->arg);
+		if (info->env)
+			free_list(&(info->env));
+		if (info->history)
+			free_list(&(info->history));
+		if (info->alias)
+			free_list(&(info->alias));
+		ffree(info->environ);
+			info->environ = NULL;
+		bfree((void **)info->cmd_buf);
+		if (info->readfd > 2)
+			close(info->readfd);
 		_putchar(BUF_FLUSH);
 	}
 }

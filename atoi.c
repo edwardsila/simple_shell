@@ -1,41 +1,37 @@
 #include "shell.h"
 
 /**
- * isShellInteractive - Determine if the shell is in interactive mode.
- * @shellInfo: A structure containing shell information.
+ * interactive - returns true if shell is interactive mode
+ * @info: struct address
  *
- * Return: 1 if the shell is in interactive mode, 0 otherwise.
+ * Return: 1 if interactive mode, 0 otherwise
  */
-
-int isShellInteractive(shell_info_t *shellInfo)
+int interactive(info_t *info)
 {
-	return (isatty(STDIN_FILENO) && shellInfo->readfd <= 2);
+	return (isatty(STDIN_FILENO) && info->readfd <= 2);
 }
 
 /**
- * isCharDelim - Check if a character is a delimiter.
- * @character: The character to check.
- * @delimStr: The string of delimiters to compare against.
- * Return: 1 if the character is a delimiter, 0 otherwise.
+ * is_delim - checks if character is a delimeter
+ * @c: the char to check
+ * @delim: the delimeter string
+ * Return: 1 if true, 0 if false
  */
-
-int isCharDelim(char character, char *delimStr)
+int is_delim(char c, char *delim)
 {
-	while (*delimStr)
-	{
-		if (*delimStr++ == character)
-			return (1); /* Character is a delimeter */
-	}
-	return (0); /* character not a delim */
+	while (*delim)
+		if (*delim++ == c)
+			return (1);
+	return (0);
 }
 
 /**
- * isalpha - checks for alphabetic char
- * @c: character
- * Return: 1 if c is an alphabet, 0 otherwise
+ *_isalpha - checks for alphabetic character
+ *@c: The character to input
+ *Return: 1 if c is alphabetic, 0 otherwise
  */
 
-int isalpha(int c)
+int _isalpha(int c)
 {
 	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
 		return (1);
@@ -44,37 +40,36 @@ int isalpha(int c)
 }
 
 /**
- * strToInt - Convert a string to an integer.
- * @str: The string to be converted.
- *
- * Return: 0 if no numbers in string, the converted number otherwise.
+ *_atoi - converts a string to an integer
+ *@s: the string to be converted
+ *Return: 0 if no numbers in string, converted number otherwise
  */
 
-int strToInt(char *str)
+int _atoi(char *s)
 {
-	int i;
+	int i, sign = 1, flag = 0, output;
+	unsigned int result = 0;
 
-	int sign = 1;
-	int flag = 0;
-	int result = 0;
-
-	for (i = 0; str[i] != '\0' && flag != 2; i++)
+	for (i = 0;  s[i] != '\0' && flag != 2; i++)
 	{
-		if (str[i] == '-')
+		if (s[i] == '-')
 			sign *= -1;
-		if (str[i] >= '0' && str[i] <= '9')
+
+		if (s[i] >= '0' && s[i] <= '9')
 		{
 			flag = 1;
 			result *= 10;
-			result += (str[i] - '0');
+			result += (s[i] - '0');
 		}
 		else if (flag == 1)
-		{
 			flag = 2;
-		}
 	}
+
 	if (sign == -1)
-		return (-result);
+		output = -result;
 	else
-		return (result);
+		output = result;
+
+	return (output);
 }
+

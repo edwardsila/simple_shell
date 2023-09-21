@@ -1,101 +1,115 @@
 #include "shell.h"
 
 /**
- * exitShell - Exit the shell with an optional exit status.
- * @shellInfo: Structure containing potential arguments.
- *
- * Return: Exits the shell with a given exit status (0 if no exit argument).
+ * _myhistory - displays the history list, one command by line, preceded
+ *              with line numbers, starting at 0.
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
  */
-
-int exitShell(shell_info_t *shellInfo)
+int _myhistory(info_t *info)
 {
-	int exitStatus;
-
-	if (shellInfo->argc > 1)
-	{
-		exitStatus = _erratoi(shellInfo->argv[1]);
-		if (exitStatus == -1)
-		{
-			shellInfo->status = 2;
-			print_error(shellInfo, "Wrong number: ");
-			_eputs(shellInfo->argv[1]);
-			_eputchar('\n');
-			return (1);
-		}
-		shellInfo->err_num = _erratoi(shellInfo->argv[1]);
-		return (-2);
-	}
-	else
-		shellInfo->err_num = -1;
-	return (-2);
-}
-
-/**
- * changeDir - Change the current working directory of the process.
- * @shellInfo: Structure containing potential arguments.
- * Return: Always 0.
- */
-
-int changeDir(shell_info_t *shellInfo)
-{
-	char *currentDir, *newDir, buffer[1024];
-	int chdirResult;
-
-	currentDir = getcwd(buffer, 1024);
-	if (!currentDir)
-		_puts("TODO: Failure\n");
-	if (!shellInfo->argv[1])
-	{
-		newDir = getEnvVariable(shellInfo, "HOME=");
-		if (!newDir)
-			chdirResult = chdir((newDir = getEnvVariable(shellInfo, "PWD=")) ? newDir : "/");
-		else
-			chdirResult = chdir(newDir);
-	}
-	else if (_strcmp(shellInfo->argv[1], "-") == 0)
-	{
-		if (!getEnvVariable(shellInfo, "OLDPWD="))
-		{
-			_puts(currentDir);
-			_putchar('\n');
-			return (1);
-		}
-		_puts(getEnvVariable(shellInfo, "OLDPWD="));
-		_putchar('\n');
-		chdirResult = chdir((newDir = getEnvVariable(shellInfo, "OLDPWD=")) ? newDir : "/");
-	}
-	else
-		chdirResult = chdir(shellInfo->argv[1]);
-
-	if (chdirResult == -1)
-	{
-		print_error(shellInfo, "cannot cd to: ");
-		_eputs(shellInfo->argv[1]);
-		_eputchar('\n');
-	}
-	else
-	{
-		setEnv(shellInfo, "OLDPWD", getEnvVariable(shellInfo, "PWD="));
-		setEnv(shellInfo, "PWD", getcwd(buffer, 1024));
-	}
+	print_list(info->history);
 	return (0);
 }
 
 /**
- * showHelp - Display help information.
- * @shellInfo: Structure containing arguments.
- * Return: Always 0.
+ * unset_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
+ *
+ * Return: Always 0 on success, 1 on error
  */
-
-int showHelp(shell_info_t *shellInfo)
+int unset_alias(info_t *info, char *str)
 {
-	char **argArray;
+	char *p, c;
+	int ret;
 
-	argArray = shellInfo->argv;
-	_puts("show help functions \n");
-	if (0)
+	p = _strchr(str, '=');
+	if (!p)
+		return (1);
+	c = *p;
+	*p = 0;
+	ret = delete_node_at_index(&(info->alias),
+		get_node_index(info->alias, node_starts_with(info->alias, str, -1)));
+	*p = c;
+	return (ret);
+}
+
+/**
+ * set_alias - sets alias to string
+ * @info: parameter struct
+ * @str: the string alias
+ *
+ * Return: Always 0 on success, 1 on error
+ */
+int set_alias(info_t *info, char *str)
+{
+	char *p;
+
+	p = _strchr(str, '=');
+	if (!p)
+		return (1);
+	if (!*++p)
+		return (unset_alias(info, str));
+
+	unset_alias(info, str);
+	return (add_node_end(&(info->alias), str, 0) == NULL);
+}
+
+/**
+ * print_alias - prints an alias string
+ * @node: the alias node
+ *
+ * Return: Always 0 on success, 1 on error
+ */
+int print_alias(list_t *node)
+{
+	char *p = NULL, *a = NULL;
+
+	if (node)
 	{
-		_puts(*argArray);
+		p = _strchr(node->str, '=');
+		for (a = node->str; a <= p; a++)
+			_putchar(*a);
+		_putchar('\'');
+		_puts(p + 1);
+		_puts("'\n");
+		return (0);
 	}
+	return (1);
+}
+
+/**
+ * _myalias - mimics the alias builtin (man alias)
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ *  Return: Always 0
+ */
+int _myalias(info_t *info)
+{
+	int i = 0;
+	char *p = NULL;
+	list_t *node = NULL;
+
+	if (info->argc == 1)
+	{
+		node = info->alias;
+		while (node)
+		{
+			print_alias(node);
+			node = node->next;
+		}
+		return (0);
+	}
+	for (i = 1; info->argv[i]; i++)
+	{
+		p = _strchr(info->argv[i], '=');
+		if (p)
+			set_alias(info, info->argv[i]);
+		else
+			print_alias(node_starts_with(info->alias, info->argv[i], '='));
+	}
+
 	return (0);
 }

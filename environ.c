@@ -1,31 +1,32 @@
 #include "shell.h"
-/**
- * dispEnvironment - Displays the current environment variables.
- * @shellInfo: Structure containing potential arguments.
- * Return: Always returns 0.
- */
 
-int dispEnvironment(shell_info_t *shellInfo)
+/**
+ * _myenv - prints the current environment
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
+ */
+int _myenv(info_t *info)
 {
-	print_history_str(shellInfo->env);
+	print_list_str(info->env);
 	return (0);
 }
 
 /**
- * getEnvVariable - Gets the value of an environment variable.
- * @shellInfo: Structure containing potential arguments.
- * @name: The name of the environment variable.
- * Return: The value of the environment variable, or NULL if not found.
+ * _getenv - gets the value of an environ variable
+ * @info: Structure containing potential arguments. Used to maintain
+ * @name: env var name
+ *
+ * Return: the value
  */
-
-char *getEnvVariable(shell_info_t *shellInfo, const char *name)
+char *_getenv(info_t *info, const char *name)
 {
-	list_t *node = shellInfo->env;
+	list_t *node = info->env;
 	char *p;
 
 	while (node)
 	{
-		p = startWith(node->str, name);
+		p = starts_with(node->str, name);
 		if (p && *p)
 			return (p);
 		node = node->next;
@@ -34,58 +35,58 @@ char *getEnvVariable(shell_info_t *shellInfo, const char *name)
 }
 
 /**
- * setEnvVariable - Initialize a new environment variable or modify
- * an existing one.
- * @shellInfo: Structure containing potential arguments.
- * Return: Returns 0 on success, 1 on error.
+ * _mysetenv - Initialize a new environment variable,
+ *             or modify an existing one
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
  */
-
-int setEnvVariable(shell_info_t *shellInfo)
+int _mysetenv(info_t *info)
 {
-	if (shellInfo->argc != 3)
+	if (info->argc != 3)
 	{
-		_eputs("check number of arguments\n");
+		_eputs("Incorrect number of arguements\n");
 		return (1);
 	}
-	if (setEnv(shellInfo, shellInfo->argv[1], shellInfo->argv[2]))
+	if (_setenv(info, info->argv[1], info->argv[2]))
 		return (0);
 	return (1);
 }
 
 /**
- * unsetEnvVariable - Remove an environment variable.
- * @shellInfo: Structure containing arguments.
- * Return: Returns 0 on success, 1 on error.
+ * _myunsetenv - Remove an environment variable
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: Always 0
  */
-
-int unsetEnvVariable(shell_info_t *shellInfo)
+int _myunsetenv(info_t *info)
 {
 	int i;
 
-	if (shellInfo->argc == 1)
+	if (info->argc == 1)
 	{
-		_eputs("Few Arguments.\n");
+		_eputs("Too few arguements.\n");
 		return (1);
 	}
-	for (i = 1; i <= shellInfo->argc; i++)
-		unsetEnv(shellInfo, shellInfo->argv[i]);
+	for (i = 1; i <= info->argc; i++)
+		_unsetenv(info, info->argv[i]);
 
 	return (0);
 }
 
 /**
- * populateEnvList - Populates the environment linked list.
- * @shellInfo: Structure containing arguments.
- * Return: Always returns 0.
+ * populate_env_list - populates env linked list
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
  */
-
-int populateEnvList(shell_info_t *shellInfo)
+int populate_env_list(info_t *info)
 {
 	list_t *node = NULL;
 	size_t i;
 
 	for (i = 0; environ[i]; i++)
-		add_history_node_end(&node, environ[i], 0);
-	shellInfo->env = node;
+		add_node_end(&node, environ[i], 0);
+	info->env = node;
 	return (0);
 }

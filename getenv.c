@@ -1,90 +1,93 @@
 #include "shell.h"
-/**
- * getEnviron - Retrieves and returns the environment variables as a string
- * @shellInfo: A pointer to a structure (shell_info_t)
- * @Return: A pointer to a string array containing the environment variables.
- */
 
-char **getEnviron(shell_info_t *shellInfo)
+/**
+ * get_environ - returns the string array copy of our environ
+ * @info: Structure containing potential arguments. Used to maintain
+ *          constant function prototype.
+ * Return: Always 0
+ */
+char **get_environ(info_t *info)
 {
-	if (!shellInfo || shellInfo->env_changed)
+	if (!info->environ || info->env_changed)
 	{
-		shellInfo->environ = list_to_string_arr(shellInfo->env);
-		shellInfo->env_changed = 0;
+		info->environ = list_to_strings(info->env);
+		info->env_changed = 0;
 	}
-	return (shellInfo->environ);
+
+	return (info->environ);
 }
 
 /**
- * unsetEnv - Remove an environment variable.
- * @shellInfo: Structure containing arguments.
- * @var: The string env var property.
- * Return: 1 on delete, 0 otherwise.
+ * _unsetenv - Remove an environment variable
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ *  Return: 1 on delete, 0 otherwise
+ * @var: the string env var property
  */
-
-int unsetEnv(shell_info_t *shellInfo, char *var)
+int _unsetenv(info_t *info, char *var)
 {
-	list_t *node = shellInfo->env;
+	list_t *node = info->env;
 	size_t i = 0;
 	char *p;
 
 	if (!node || !var)
 		return (0);
+
 	while (node)
 	{
-		p = startWith(node->str, var);
+		p = starts_with(node->str, var);
 		if (p && *p == '=')
 		{
-			shellInfo->env_changed = delete_hist_node_at_index
-				(&(shellInfo->env), i);
-			node = shellInfo->env;
+			info->env_changed = delete_node_at_index(&(info->env), i);
+			i = 0;
+			node = info->env;
 			continue;
 		}
 		node = node->next;
 		i++;
 	}
-	return (shellInfo->env_changed);
+	return (info->env_changed);
 }
 
 /**
- * setEnv - Initialize a new environment variable,
- *             or modify an existing one.
- * @shellInfo: Structure containing potential arguments.
- * @var: The string env var property.
- * @value: The string env var value.
- * Return: Always 0.
+ * _setenv - Initialize a new environment variable,
+ *             or modify an existing one
+ * @info: Structure containing potential arguments. Used to maintain
+ *        constant function prototype.
+ * @var: the string env var property
+ * @value: the string env var value
+ *  Return: Always 0
  */
-
-int setEnv(shell_info_t *shellInfo, char *var, char *value)
+int _setenv(info_t *info, char *var, char *value)
 {
-	char equals[] = "=";
 	char *buf = NULL;
 	list_t *node;
 	char *p;
 
 	if (!var || !value)
 		return (0);
+
 	buf = malloc(_strlen(var) + _strlen(value) + 2);
 	if (!buf)
 		return (1);
 	_strcpy(buf, var);
-	_strcat(buf, equals);
+	_strcat(buf, "=");
 	_strcat(buf, value);
-	node = shellInfo->env;
+	node = info->env;
 	while (node)
 	{
-		p = startWith(node->str, var);
+		p = starts_with(node->str, var);
 		if (p && *p == '=')
 		{
 			free(node->str);
 			node->str = buf;
-			shellInfo->env_changed = 1;
+			info->env_changed = 1;
 			return (0);
 		}
 		node = node->next;
 	}
-	add_history_node_end(&(shellInfo->env), buf, 0);
+	add_node_end(&(info->env), buf, 0);
 	free(buf);
-	shellInfo->env_changed = 1;
+	info->env_changed = 1;
 	return (0);
 }
