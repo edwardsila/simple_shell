@@ -21,7 +21,7 @@ ssize_t bufferInput(shell_info_t *info, char **buf, size_t *len)
 		if (0)
 			bytesRead = getline(buf, &len_p, stdin);
 		else
-			bytesRead = customGetLine(info, buf, &len_p);
+			bytesRead = get_line(info, buf, &len_p);
 
 		if (bytesRead > 0)
 		{
@@ -31,8 +31,8 @@ ssize_t bufferInput(shell_info_t *info, char **buf, size_t *len)
 				bytesRead--;
 			}
 			info->linecount_flag = 1;
-			removeComments(*buf);
-			buildHistoryList(info, *buf, info->histcount++);
+			rm_comments(*buf);
+			build_hist_list(info, *buf, info->histcount++);
 
 			{
 				*len = bytesRead;
@@ -56,7 +56,7 @@ ssize_t  getInputLine(shell_info_t *info)
 	ssize_t bytesRead = 0;
 	char **currentCmdPtr = &(info->arg), *currentCmd;
 
-	_putchar(FLUSH_BUFFER);
+	_putchar(-1);
 	bytesRead = bufferInput(info, &cmdBuffer, &bufferLength);
 	if (bytesRead == -1)
 		return (-1);
@@ -65,19 +65,19 @@ ssize_t  getInputLine(shell_info_t *info)
 		nextIndex = currentIndex;
 		currentCmd = cmdBuffer + currentIndex;
 
-		checkCommandChain(info, cmdBuffer, &nextIndex, currentIndex, bufferLength);
+		checkChain(info, cmdBuffer, &nextIndex, currentIndex, bufferLength);
 		while (nextIndex < bufferLength)
 		{
-			if (isCommandChain(info, cmdBuffer, &nextIndex))
+			if (isChain(info, cmdBuffer, &nextIndex))
 				break;
 			nextIndex++;
 		}
 
 		currentIndex = nextIndex + 1;
-		if (currentIndex >= bufferlength)
+		if (currentIndex >= bufferLength)
 		{
 			currentIndex = bufferLength = 0;
-			info->cmd_buf_type = CMD_NORMAL;
+			info->cmd_buf_type = CMD_NORM;
 		}
 
 		*currentCmdPtr = currentCmd;
@@ -138,12 +138,12 @@ int get_line(shell_info_t *info, char **ptr, size_t *length)
 	newCurrentLine = _realloc(currentLine, bytesRead, bytesRead ?
 			bytesRead + k : k + 1);
 	if (!newCurrentLine)
-		return (currentLine ? free(currentline), -1 : -1);
+		return (currentLine ? free(currentLine), -1 : -1);
 
 	if (bytesRead)
 		_strncat(newCurrentLine, buf + currentIndex, k - currentIndex);
 	else
-		_strncpy(newCurrentLIne, buf + currentIndex,
+		_strncpy(newCurrentLine, buf + currentIndex,
 				k - currentIndex + 1);
 
 	bytesRead += k - currentIndex;
@@ -166,5 +166,5 @@ void handleSigint(__attribute__((unused))int sigNum)
 {
 	_puts("\n");
 	_puts("$ ");
-	_putchar(FLUSH_BUFFER);
+	_putchar(-1);
 }

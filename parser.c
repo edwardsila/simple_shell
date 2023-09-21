@@ -58,7 +58,7 @@ char *find_exe_path(shell_info_t *shellInfo, char *path_str, char *command)
 
 	if (!path_str)
 		return (NULL);
-	if ((_strlen(command) > 2) && starts_with(command, "./"))
+	if ((_strlen(command) > 2) && startWith(command, "./"))
 	{
 		if (is_executable(shellInfo, command))
 			return (_strdup(command));

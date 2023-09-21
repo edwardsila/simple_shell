@@ -14,25 +14,25 @@ int hsh(shell_info_t *shellInfo, char **av)
 
 	while (s != -1 && builtin != -2)
 	{
-		clear_info(ShellInfo);
-		if (interactive(shellInfo))
+		clearShellInfo(shellInfo);
+		if (isShellInteractive(shellInfo))
 			_puts("$ ");
 		_eputchar(BUF_FLUSH);
-		s = get_input(shellInfo);
+		s = getInputLine(shellInfo);
 		if (s != -1)
 		{
-			set_info(shellInfo, av);
+			setShellInfo(shellInfo, av);
 			builtin = find_builtin(shellInfo);
 			if (builtin == -1)
-				find_cmd(shellInfo);
+				findCmd(shellInfo);
 		}
-		else if (interactive(shellInfo))
+		else if (isShellInteractive(shellInfo))
 			_putchar('\n');
-		free_info(shellInfo, 0);
+		freeShellInfo(shellInfo, 0);
 	}
-	write_history(shellInfo);
-	free_info(shellInfo, 0);
-	if (!interactive(shellInfo) && shellInfo->status)
+	write_hist_file(shellInfo);
+	freeShellInfo(shellInfo, 0);
+	if (!isShellInteractive(shellInfo) && shellInfo->status)
 		exit(shellInfo->status);
 	if (builtin == -2)
 	{
@@ -58,14 +58,14 @@ int find_builtin(shell_info_t *shellInfo)
 	int i;
 	int  builtIn = -1;
 	ShellBuiltin builtinta[] = {
-		{"exit", _myexit},
-		{"env", _myenv},
-		{"help", _myhelp},
-		{"history", _myhistory},
-		{"setenv", _mysetenv},
-		{"unsetenv", _myunsetenv},
-		{"cd", _mycd},
-		{"alias", _myalias}
+		{"exit", exitShell},
+		{"env", dispEnvironment},
+		{"help", showHelp},
+		{"history", displayShellHist},
+		{"setenv", setEnvVariable},
+		{"unsetenv", unsetEnvVariable},
+		{"cd", changeDir},
+		{"alias", manageAlias},
 		{NULL, NULL}
 	};
 
@@ -100,25 +100,25 @@ void findCmd(shell_info_t *shellInfo)
 	}
 	for (i = 0, j = 0; shellInfo->arg[i]; i++)
 	{
-		if (!is_delim(shellInfo->arg[i], "\t\n"))
+		if (!isCharDelim(shellInfo->arg[i], "\t\n"))
 			j++;
 	}
 	if (!j)
 		return;
 
-	path = find_path(shellInfo, _getenv(shellInfo, "PATH="),
+	path = find_exe_path(shellInfo, getEnvVariable(shellInfo, "PATH="),
 			shellInfo->argv[0]);
 	if (path)
 	{
 		shellInfo->path = path;
-		fork_cmd(shellInfo);
+		forkCmd(shellInfo);
 	}
 	else
 	{
-		if ((interactive(shellInfo) || _getenv(shellInfo, "PATH=")
-			|| shellInfo->argv[0][0] == '/') && is_cmd(shellInfo,
+		if ((isShellInteractive(shellInfo) || getEnvVariable(shellInfo, "PATH=")
+			|| shellInfo->argv[0][0] == '/') && is_executable(shellInfo,
 				shellInfo->argv[0]))
-			fork_cmd(shellInfo);
+			forkCmd(shellInfo);
 		else if (*(shellInfo->arg) != '\n')
 		{
 			shellInfo->status = 127;
@@ -149,12 +149,12 @@ TODO:
 		if (execve(shellInfo->path, shellInfo->argv, shellInfo->environ
 			  ) == -1)
 		{
-			free_info(shellInfo, 1);
+			freeShellInfo(shellInfo, 1);
 			if (errno == EACCES)
 				exit(126);
 			exit(1);
 		}
-TODO:
+
 	}
 	else
 	{

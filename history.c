@@ -10,7 +10,7 @@ char *get_hist_file(shell_info_t *shellInfo)
 {
 	char *buf, *dir;
 
-	dir = _getenv(shellInfo, "HOME=");
+	dir = getEnvVariable(shellInfo, "HOME=");
 	if (!dir)
 		return (NULL);
 	buf = malloc(sizeof(char) * (_strlen(dir) + _strlen(HIST_FILE) + 2));
@@ -32,7 +32,7 @@ char *get_hist_file(shell_info_t *shellInfo)
 int write_hist_file(shell_info_t *shellInfo)
 {
 	ssize_t fd;
-	char *filename = get_history_file(shellInfo);
+	char *filename = get_hist_file(shellInfo);
 	list_t *node = NULL;
 
 	if (!filename)
@@ -44,10 +44,10 @@ int write_hist_file(shell_info_t *shellInfo)
 		return (-1);
 	for (node = shellInfo->history; node; node = node->next)
 	{
-		_putsfd(node->str, fd);
-		_putfd('\n', fd);
+		_putsFileDp(node->str, fd);
+		_putFileDp('\n', fd);
 	}
-	_putfd(BUF_FLUSH, fd);
+	_putFileDp(BUF_FLUSH, fd);
 	close(fd);
 	return (1);
 }
@@ -98,7 +98,7 @@ int read_hist_file(shell_info_t *shellInfo)
 	free(buf);
 	shellInfo->histcount = linecount;
 	while (shellInfo->histcount-- >= HIST_MAX)
-		delete_node_at_index(&(shellInfo->history), 0);
+		delete_hist_node_at_index(&(shellInfo->history), 0);
 	renumber_history(shellInfo);
 	return (shellInfo->histcount);
 }
@@ -117,7 +117,7 @@ int build_hist_list(shell_info_t *shellInfo, char *buf, int linecount)
 
 	if (shellInfo->history)
 		node = shellInfo->history;
-	add_node_end(&node, buf, linecount);
+	add_history_node_end(&node, buf, linecount);
 
 	if (!shellInfo->history)
 		shellInfo->history = node;

@@ -18,7 +18,7 @@ int isChain(shell_info_t *shellInfo, char *buf, size_t *p)
 		i++;
 		shellInfo->cmd_buf_type = CMD_OR;
 	}
-	else if (buf[i]  == '&' buf[j + 1] == '&')
+	else if (buf[i]  == '&' && buf[i + 1] == '&')
 	{
 		buf[i] = 0;
 		i++;
@@ -84,7 +84,7 @@ int replaceAlias(shell_info_t *shellInfo)
 
 	for (i = 0; i < 10; i++)
 	{
-		node = node_starts_with(shellInfo->alias, shellInfo->argv[0],
+		node = find_node_with_pfx(shellInfo->alias, shellInfo->argv[0],
 				'=');
 		if (!node)
 			return (0);
@@ -119,16 +119,16 @@ int replaceVars(shell_info_t *shellInfo)
 		if (!_strcmp(shellInfo->argv[i], "$?"))
 		{
 			replace_string(&(shellInfo->argv[i]), _strdup
-				(convert_number(shellInfo->status, 10, 0)));
+				(convert_number_to_str(shellInfo->status, 10, 0)));
 			continue;
 		}
 		if (!_strcmp(shellInfo->argv[i], "$$"))
 		{
-			replace_string(&(shellInfo->argv[i]), _strdup(convert
-						_number(getpid(), 10, 0)));
+			replace_string(&(shellInfo->argv[i]), _strdup
+					(convert_number_to_str(getpid(), 10, 0)));
 			continue;
 		}
-		node = node_starts_with(shellInfo->env,
+		node = find_node_with_pfx(shellInfo->env,
 				shellInfo->argv[i][1], '=');
 		if (node)
 		{
@@ -136,7 +136,7 @@ int replaceVars(shell_info_t *shellInfo)
 						(node->str, '=') + 1));
 			continue;
 		}
-		replace_string(&shellInfo->srgv[i], _strdup(""));
+		replace_string(&shellInfo->argv[i], _strdup(""));
 	}
 	return (0);
 }

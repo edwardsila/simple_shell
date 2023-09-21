@@ -10,6 +10,8 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/stat.h>
+
 
 #define BUF_FLUSH -1
 
@@ -111,6 +113,9 @@ typedef struct ShellBuiltin
 	int (*handler)(shell_info_t *);
 } ShellBuiltin;
 
+#define INFO_INIT \
+{NULL, NULL, NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, \
+		0, 0, 0}
 
 /* atoi */
 int isShellInteractive(shell_info_t *shellInfo);

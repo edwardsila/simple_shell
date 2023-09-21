@@ -37,7 +37,7 @@ char *_strdup(const char *str)
 	if (str == NULL)
 		return (NULL);
 	while (*str++)
-		length++;
+		len++;
 	c = malloc(sizeof(char) * (len + 1));
 	if (!c)
 		return (NULL);
@@ -100,7 +100,7 @@ size_t print_list(const list_t *h)
 
 	while (h)
 	{
-		_puts(convert_number_to_string(h->num, 10, 0));
+		_puts(convert_number_to_str(h->num, 10, 0));
 		_putchar(':');
 		_putchar(' ');
 		_puts(h->str ? h->str : "(nil)");
